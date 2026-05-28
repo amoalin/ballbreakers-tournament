@@ -1,4 +1,5 @@
 let equipos = [];
+let gruposGlobal = {};
 
 async function cargarEquipos(){
 
@@ -73,6 +74,8 @@ function generarGrupos(){
     B:[]
   };
 
+gruposGlobal = grupos;
+
   mezcla.forEach((equipo,index)=>{
 
     if(index % 2 === 0){
@@ -101,6 +104,55 @@ function generarGrupos(){
     gruposContainer.appendChild(div);
 
   }
+function generarFixture(){
+
+  const fixtureContainer =
+    document.getElementById("fixtureContainer");
+
+  fixtureContainer.innerHTML = "";
+
+  for(let grupo in gruposGlobal){
+
+    const equiposGrupo = gruposGlobal[grupo];
+
+    const div = document.createElement("div");
+
+    div.classList.add("grupo");
+
+    let partidosHTML = "";
+
+    for(let i = 0; i < equiposGrupo.length; i++){
+
+      for(let j = i + 1; j < equiposGrupo.length; j++){
+
+        partidosHTML += `
+          <li>
+            🏐 ${equiposGrupo[i]}
+            vs
+            ${equiposGrupo[j]}
+          </li>
+        `;
+
+      }
+
+    }
+
+    div.innerHTML = `
+      <h3>
+        Fixture Grupo ${grupo}
+      </h3>
+
+      <ul>
+        ${partidosHTML}
+      </ul>
+    `;
+
+    fixtureContainer.appendChild(div);
+
+  }
+
+}
+
 }
 
 cargarEquipos();
