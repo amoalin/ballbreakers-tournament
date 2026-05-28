@@ -1,6 +1,6 @@
 let equipos = [];
 let gruposGlobal = {};
-
+let partidosGlobal = [];
 async function cargarEquipos(){
 
   const res = await fetch("/api/equipos");
@@ -130,13 +130,49 @@ function generarFixture(){
 
       for(let j = i + 1; j < equiposGrupo.length; j++){
 
+partidosGlobal.push({
+  grupo,
+  local:equiposGrupo[i],
+  visitante:equiposGrupo[j],
+  puntosLocal:0,
+  puntosVisitante:0
+});
         partidosHTML += `
-          <li>
-            🏐 ${equiposGrupo[i]}
-            vs
-            ${equiposGrupo[j]}
-          </li>
-        `;
+  <li style="margin-bottom:15px;">
+
+    🏐 ${equiposGrupo[i]}
+    vs
+    ${equiposGrupo[j]}
+
+    <br><br>
+
+    <input
+      type="number"
+      id="local-${grupo}-${i}-${j}"
+      placeholder="25"
+      style="width:70px;"
+    >
+
+    <input
+      type="number"
+      id="visitante-${grupo}-${i}-${j}"
+      placeholder="18"
+      style="width:70px;"
+    >
+
+    <button onclick="
+      guardarResultado(
+        '${equiposGrupo[i]}',
+        '${equiposGrupo[j]}',
+        'local-${grupo}-${i}-${j}',
+        'visitante-${grupo}-${i}-${j}'
+      )
+    ">
+      Guardar
+    </button>
+
+  </li>
+`;
 
       }
 
@@ -155,6 +191,129 @@ function generarFixture(){
     fixtureContainer.appendChild(div);
 
   }
+
+generarTabla();
+
+}
+}
+
+function guardarResultado(
+  local,
+  visitante,
+  inputLocalId,
+  inputVisitanteId
+){
+
+  const puntosLocal =
+    parseInt(
+      document.getElementById(inputLocalId).value
+    );
+
+  const puntosVisitante =
+    parseInt(
+      document.getElementById(inputVisitanteId).value
+    );
+
+  if(
+    isNaN(puntosLocal) ||
+    isNaN(puntosVisitante)
+  ){
+    alert("Ingresa los marcadores");
+    return;
+  }
+
+  const partido =
+    partidosGlobal.find((p)=>
+      p.local === local &&
+      p.visitante === visitante
+    );
+
+  partido.puntosLocal = puntosLocal;
+  partido.puntosVisitante = puntosVisitante;
+
+  generarTabla();
+
+}
+
+function generarTabla(){
+
+  const tablaContainer =
+    document.getElementById("tablaContainer");
+
+  tablaContainer.innerHTML = "";
+
+  let tabla = {};
+
+  equipos.forEach((equipo)=>{
+
+    tabla[equipo] = {
+      pj:0,
+      pg:0,
+      pp:0,
+      pts:0
+    };
+
+  });
+
+  partidosGlobal.forEach((partido)=>{
+
+    if(
+      partido.puntosLocal === 0 &&
+      partido.puntosVisitante === 0
+    ){
+      return;
+    }
+
+    tabla[partido.local].pj++;
+    tabla[partido.visitante].pj++;
+
+    if(partido.puntosLocal > partido.puntosVisitante){
+
+      tabla[partido.local].pg++;
+      tabla[partido.local].pts += 2;
+
+      tabla[partido.visitante].pp++;
+      tabla[partido.visitante].pts += 1;
+
+    }else{
+
+      tabla[partido.visitante].pg++;
+      tabla[partido.visitante].pts += 2;
+
+      tabla[partido.local].pp++;
+      tabla[partido.local].pts += 1;
+
+    }
+
+  });
+
+  let html = `
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <th>Equipo</th>
+        <th>PJ</th>
+        <th>PG</th>
+        <th>PP</th>
+        <th>PTS</th>
+      </tr>
+  `;
+
+  for(let equipo in tabla){
+
+    html += `
+      <tr>
+        <td>${equipo}</td>
+        <td>${tabla[equipo].pj}</td>
+        <td>${tabla[equipo].pg}</td>
+        <td>${tabla[equipo].pp}</td>
+        <td>${tabla[equipo].pts}</td>
+      </tr>
+    `;
+  }
+
+  html += "</table>";
+
+  tablaContainer.innerHTML = html;
 
 }
 
