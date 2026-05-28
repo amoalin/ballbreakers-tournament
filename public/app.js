@@ -74,7 +74,7 @@ function generarGrupos(){
     B:[]
   };
 
-gruposGlobal = grupos;
+  gruposGlobal = grupos;
 
   mezcla.forEach((equipo,index)=>{
 
@@ -104,6 +104,11 @@ gruposGlobal = grupos;
     gruposContainer.appendChild(div);
 
   }
+
+  generarFixture();
+
+}
+
 function generarFixture(){
 
   const fixtureContainer =
@@ -150,8 +155,6 @@ function generarFixture(){
     fixtureContainer.appendChild(div);
 
   }
-
-}
 
 }
 
