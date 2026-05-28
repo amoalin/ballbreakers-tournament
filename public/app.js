@@ -195,7 +195,6 @@ partidosGlobal.push({
 generarTabla();
 
 }
-}
 
 function guardarResultado(
   local,
