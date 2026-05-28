@@ -1,6 +1,7 @@
 let equipos = [];
 let gruposGlobal = {};
 let partidosGlobal = [];
+
 async function cargarEquipos(){
 
   const res = await fetch("/api/equipos");
@@ -8,6 +9,7 @@ async function cargarEquipos(){
   equipos = await res.json();
 
   mostrarEquipos();
+
 }
 
 function mostrarEquipos(){
@@ -25,6 +27,7 @@ function mostrarEquipos(){
     lista.appendChild(li);
 
   });
+
 }
 
 async function agregarEquipo(){
@@ -51,6 +54,7 @@ async function agregarEquipo(){
   input.value = "";
 
   cargarEquipos();
+
 }
 
 function generarGrupos(){
@@ -94,6 +98,7 @@ function generarGrupos(){
 
     div.innerHTML = `
       <h3>Grupo ${letra}</h3>
+
       <ul>
         ${grupos[letra]
           .map(eq=>`<li>${eq}</li>`)
@@ -116,6 +121,8 @@ function generarFixture(){
 
   fixtureContainer.innerHTML = "";
 
+  partidosGlobal = [];
+
   for(let grupo in gruposGlobal){
 
     const equiposGrupo = gruposGlobal[grupo];
@@ -130,49 +137,50 @@ function generarFixture(){
 
       for(let j = i + 1; j < equiposGrupo.length; j++){
 
-partidosGlobal.push({
-  grupo,
-  local:equiposGrupo[i],
-  visitante:equiposGrupo[j],
-  puntosLocal:0,
-  puntosVisitante:0
-});
+        partidosGlobal.push({
+          grupo,
+          local:equiposGrupo[i],
+          visitante:equiposGrupo[j],
+          puntosLocal:0,
+          puntosVisitante:0
+        });
+
         partidosHTML += `
-  <li style="margin-bottom:15px;">
+          <li style="margin-bottom:15px;">
 
-    🏐 ${equiposGrupo[i]}
-    vs
-    ${equiposGrupo[j]}
+            🏐 ${equiposGrupo[i]}
+            vs
+            ${equiposGrupo[j]}
 
-    <br><br>
+            <br><br>
 
-    <input
-      type="number"
-      id="local-${grupo}-${i}-${j}"
-      placeholder="25"
-      style="width:70px;"
-    >
+            <input
+              type="number"
+              id="local-${grupo}-${i}-${j}"
+              placeholder="25"
+              style="width:70px;"
+            >
 
-    <input
-      type="number"
-      id="visitante-${grupo}-${i}-${j}"
-      placeholder="18"
-      style="width:70px;"
-    >
+            <input
+              type="number"
+              id="visitante-${grupo}-${i}-${j}"
+              placeholder="18"
+              style="width:70px;"
+            >
 
-    <button onclick="
-      guardarResultado(
-        '${equiposGrupo[i]}',
-        '${equiposGrupo[j]}',
-        'local-${grupo}-${i}-${j}',
-        'visitante-${grupo}-${i}-${j}'
-      )
-    ">
-      Guardar
-    </button>
+            <button onclick="
+              guardarResultado(
+                '${equiposGrupo[i]}',
+                '${equiposGrupo[j]}',
+                'local-${grupo}-${i}-${j}',
+                'visitante-${grupo}-${i}-${j}'
+              )
+            ">
+              Guardar
+            </button>
 
-  </li>
-`;
+          </li>
+        `;
 
       }
 
@@ -192,7 +200,7 @@ partidosGlobal.push({
 
   }
 
-generarTabla();
+  generarTabla();
 
 }
 
@@ -227,6 +235,11 @@ function guardarResultado(
       p.visitante === visitante
     );
 
+  if(!partido){
+    alert("Partido no encontrado");
+    return;
+  }
+
   partido.puntosLocal = puntosLocal;
   partido.puntosVisitante = puntosVisitante;
 
@@ -238,6 +251,10 @@ function generarTabla(){
 
   const tablaContainer =
     document.getElementById("tablaContainer");
+
+  if(!tablaContainer){
+    return;
+  }
 
   tablaContainer.innerHTML = "";
 
@@ -287,7 +304,11 @@ function generarTabla(){
   });
 
   let html = `
-    <table style="width:100%; border-collapse:collapse;">
+    <table style="
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+    ">
       <tr>
         <th>Equipo</th>
         <th>PJ</th>
@@ -308,6 +329,7 @@ function generarTabla(){
         <td>${tabla[equipo].pts}</td>
       </tr>
     `;
+
   }
 
   html += "</table>";
